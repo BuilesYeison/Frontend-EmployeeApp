@@ -11,19 +11,22 @@ import { HttpClient } from '@angular/common/http';
 export class EmployeeComponent implements OnInit {
 
   constructor(private http:HttpClient) { }
-  employees:any = [];
-  departments:any = [];
-  employeeName:string = "";
-  employeeId:number = 0;
-  department:string = "";
-  dateOfJoining:string = "";
-  PhotoFileName = "anonymous.png";
-  PhotoPath = environment.PHOTO_URL;
-  modalTitle:string = "";
+
+  departments:any=[];
+  employees:any=[];
+
+  modalTitle ="";
+  EmployeeId = 0;
+  EmployeeName = "";
+  Department="";
+  DateOfJoining="";
+  PhotoFileName="anonymous.png";
+  PhotoPath=environment.PHOTO_URL;
 
   ngOnInit(): void {
     this.refreshList();
   }
+
   refreshList(){
     this.http.get<any>(environment.API_URL+'employee')
     .subscribe(data=>{
@@ -37,25 +40,28 @@ export class EmployeeComponent implements OnInit {
   }
 
   addClick(){
-    this.modalTitle = "Add employee";
-    this.employeeName = "";
-    this.employeeId = 0;
+    this.modalTitle="Add Employee";
+    this.EmployeeId=0;
+    this.EmployeeName="";
+    this.Department="";
+    this.DateOfJoining="";
+    this.PhotoFileName="anonymous.png";
   }
 
   editClick(emp:any){
-    this.modalTitle = "Edit employee";
-    this.employeeId = parseInt(emp.EmployeeId);
-    this.employeeName = emp.EmployeeName;
-    this.department = emp.Department;
-    this.dateOfJoining = emp.DateOfJoining;
-    this.PhotoFileName = emp.PhotoFileName;
+    this.modalTitle="Edit Employee";
+    this.EmployeeId=emp.EmployeeId;
+    this.EmployeeName=emp.EmployeeName;
+    this.Department=emp.Department;
+    this.DateOfJoining=emp.DateOfJoining;
+    this.PhotoFileName=emp.PhotoFileName;
   }
 
   createClick(){
-    var val = {
-      EmployeeName:this.employeeName,
-      Department:this.department,
-      DateOfJoinig:this.dateOfJoining,
+    var val={
+      EmployeeName:this.EmployeeName,
+      Department:this.Department,
+      DateOfJoining:this.DateOfJoining,
       PhotoFileName:this.PhotoFileName
     };
 
@@ -63,15 +69,15 @@ export class EmployeeComponent implements OnInit {
     .subscribe(res=>{
       alert(res.toString());
       this.refreshList();
-    })
+    });
   }
 
   updateClick(){
-    var val = {
-      EmployeeId:this.employeeId,
-      EmployeeName:this.employeeName,
-      Department:this.department,
-      DateOfJoinig:this.dateOfJoining,
+    var val={
+      EmployeeId:this.EmployeeId,
+      EmployeeName:this.EmployeeName,
+      Department:this.Department,
+      DateOfJoining:this.DateOfJoining,
       PhotoFileName:this.PhotoFileName
     };
 
@@ -79,24 +85,26 @@ export class EmployeeComponent implements OnInit {
     .subscribe(res=>{
       alert(res.toString());
       this.refreshList();
-    })
+    });
   }
 
   deleteClick(id:any){
-    if(confirm('Are you sure?'))
-
-    this.http.delete(environment.API_URL+'employee/'+id)//send hhtp request
+    if(confirm('Are you sure?')){
+    this.http.delete(environment.API_URL+'employee/'+id)
     .subscribe(res=>{
       alert(res.toString());
       this.refreshList();
     });
+    }
   }
-  imageUpload(evt:any){
-    var file = evt.target.files[0];
-    const formData:FormData = new FormData();
-    formData.append("file",file,file.name);
 
-    this.http.post(environment.API_URL+"employee/savefile",formData)
+
+  imageUpload(event:any){
+    var file=event.target.files[0];
+    const formData:FormData=new FormData();
+    formData.append('file',file,file.name);
+
+    this.http.post(environment.API_URL+'employee/savefile',formData)
     .subscribe((data:any)=>{
       this.PhotoFileName=data.toString();
     });
